@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "normalization_context"={"groups"={"invoices_subresource"}}
  *      }
  *  },
- *  collectionOperations={"GET"={"path"="/factures"}, "POST"},
+ *  collectionOperations={"GET"={"path"="/clients"}, "POST"},
  *  itemOperations={"GET", "PUT", "DELETE", 
  *      "increment"={"method"="post", 
  *      "path"="/invoices/{id}/increment", 
