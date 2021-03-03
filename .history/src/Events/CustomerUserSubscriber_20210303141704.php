@@ -1,0 +1,29 @@
+<?php
+
+
+namespace App\Events;
+
+use Symfony\Component\HttpKernel\KernelEvents;
+use ApiPlatform\Core\EventListener\EventPriorities;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class CustomerUserSubscriber implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
+        return [
+            KernelEvents::VIEW => ['serUserForCustomer', EventPriorities::PRE_VALIDATE]
+        ];
+    }
+
+    public function setUserForCustomer(GetResponseForControllerResultEvent $event)
+    {
+        $result = $event->getControllerResult();
+        $method = $event->getRequest)
+
+        //choper l'utilisateur actuellement connecté
+
+        //Assigner l'utisateur au customer qu'on est en train de créer
+        dd($result);
+    }
+}
