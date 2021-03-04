@@ -15,6 +15,7 @@ import './styles/app.css';
 import NavbarTop from './components/NavbarTop';
 import HomePage from './pages/HomePage';
 import CustomersPage from './pages/CustomersPage';
+import InvoicesPage from './pages/InvoicesPage';
 
 // start the Stimulus application
 
@@ -22,8 +23,9 @@ const App = () => {
     return (
         <HashRouter>
             <NavbarTop />
-            <main className="container pt-5">
+            <main className="">
                 <Switch>
+                    <Route path="/invoices" component={InvoicesPage} />
                     <Route path="/customers" component={CustomersPage} />
                     <Route path="/" component={HomePage} />
                 </Switch>
