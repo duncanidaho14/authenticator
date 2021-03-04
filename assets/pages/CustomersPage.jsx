@@ -1,23 +1,66 @@
 import React, {useEffect, useState} from 'react';
-import axios from 'axios';
+import Pagination from './../components/Pagination';
+import CustomersAPI from '../services/CustomersApi';
 
-const CustomersPage = (props) => {
+const CustomersPage = props => {
     const [customers, setCustomers] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [search, setSearch] = useState("");
+
+    // Récupére les customers
+    const fetchCustomers = async () => {
+        try {
+            const data = await CustomersAPI.findAll()
+            setCustomers(data);
+        } catch (error) {
+            console.log(error.response);
+        }
+        
+    }
+    // Au chargement du composant, récupère les clients
     useEffect(() => {
-        axios.get("http://127.0.0.1:8000/api/customers")
-            .then(response => response.data["hydra:member"])
-            .then(data => setCustomers(data))
-            .catch(error => console.log(error.response));
+        fetchCustomers();
     }, []);
 
-    const handleDelete = id => {
-        axios.delete("http://127.0.0.1:8000/api/customers/" + id)
-            .then(response => console.log(response));
+    // Supprime un client
+    const handleDelete = async id => {
+        const originalCustomers = [...customers];
+        setCustomers(customers.filter(customer => customer.id !== id));
+        try {
+            await CustomersAPI.delete(id);
+        } catch (error) {
+            console.log(setCustomers(originalCustomers));
+        }
     }
-
-    return ( 
+    // Gestion de la page
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    }
+    // Gestion de la recherche
+    const handleSearch = event => {
+        const value = event.currentTarget.value;
+        setSearch(value);
+        setCurrentPage(1);
+    }
+    
+    const itemsPerPage = 10;
+    const filteredCustomers = customers.filter(c => 
+        c.firstName.toLowerCase().includes(search.toLowerCase()) ||
+        c.lastName.toLowerCase().includes(search.toLowerCase()) ||
+        c.email.toLowerCase().includes(search.toLowerCase()) ||
+        (c.company && c.company.toLowerCase().includes(search.toLowerCase()))
+    );
+    
+    // Pagination des données
+    const paginatedCustomers = Pagination.getData(filteredCustomers, currentPage, itemsPerPage);
+    return(
         <>
-        <h1>Liste des clients</h1>
+            <h1>Liste des clients</h1>
+            <div className="relative text-green-600 py-2 px-2 mx-auto">
+                <input type="search" onChange={handleSearch} value={search} className="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none mx-auto" />
+          </div>
+        
+
         <table className="table-auto">
             <thead>
                 <tr>
@@ -31,7 +74,7 @@ const CustomersPage = (props) => {
                 </tr>
             </thead>
             <tbody>
-                {customers.map(customer => ( 
+                    {paginatedCustomers.map(customer => (
                     <tr key={customer.id}>
                 
                         <td>{customer.id}</td>
@@ -48,7 +91,7 @@ const CustomersPage = (props) => {
                             <button 
                                 onClick={() => handleDelete(customer.id)}
                                 disabled={customer.invoices.length > 0}
-                                className="disabled:opacity-25 bg-red-500 text-white font-bold py-2 px-4 rounded opacity-50 disabled:cursor-not-allowed supprdisabled"
+                                className="disabled:opacity-25 bg-red-500 text-white font-bold py-2 px-4 rounded opacity-50 disabled:cursor-not-allowed"
                             >
                                 Supprimer
                             </button>
@@ -57,8 +100,12 @@ const CustomersPage = (props) => {
                 ))}
             </tbody>
         </table>
+        {itemsPerPage < filteredCustomers.length && (
+            <Pagination currentPage={currentPage} itemsPerPage={itemsPerPage} length={filteredCustomers.length} onPageChanged={handlePageChange}/>
+        )}
+            
         </>
-     );
+    )
 }
- 
+
 export default CustomersPage;

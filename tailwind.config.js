@@ -4,14 +4,12 @@ module.exports = {
   theme: {
     extend: {},
   },
-  variants: {
-    extend: {},
-  },
   plugins: [],
   variants: {
     opacity: ({ after }) => after(['disabled']),
     extend: {
       tableLayout: ['hover', 'focus'],
+      backgroundColor: ['active']
     }
   }
 }
